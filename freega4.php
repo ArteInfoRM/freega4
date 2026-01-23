@@ -1,13 +1,13 @@
 <?php
 /**
- *  2009-2024 GA4 PrestaShop Module
+ * Free GA4 PrestaShop Module
  *
- *  For support feel free to contact us on our website at https://www.tecnoacquisti.com
+ * For support feel free to contact us on our website at https://www.tecnoacquisti.com
  *
- *  @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
- *  @copyright 2009-2024 Tecnoacquisti.com
- *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- *  @version   1.0.5
+ * @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
+ * @copyright 2009-2026 Tecnoacquisti.com
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @version   1.0.8
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -22,7 +22,7 @@ class Freega4 extends Module
     {
         $this->name = 'freega4';
         $this->tab = 'analytics_stats';
-        $this->version = '1.0.7';
+        $this->version = '1.0.8';
         $this->author = 'Tecnoacquisti.com';
         $this->need_instance = 0;
 
@@ -71,6 +71,9 @@ class Freega4 extends Module
     public function getContent()
     {
         $output = '';
+        $useSsl = (bool)Configuration::get('PS_SSL_ENABLED_EVERYWHERE') || (bool)Configuration::get('PS_SSL_ENABLED');
+        $shop_base_url = $this->context->link->getBaseLink((int)$this->context->shop->id, $useSsl);
+
         /**
          * If values have been submitted in the form, process.
          */
@@ -79,10 +82,15 @@ class Freega4 extends Module
         }
 
         $this->context->smarty->assign('module_dir', $this->_path);
+        $this->context->smarty->assign(array(
+            'shop_base_url' => $shop_base_url,
+        ));
 
         $output .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
+        $output .= $this->renderForm();
+        $output .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/copyright.tpl');
 
-        return $output.$this->renderForm();
+        return $output;
     }
 
     /**
@@ -225,13 +233,20 @@ class Freega4 extends Module
                 Configuration::updateValue($key, (int)Tools::getValue($key));
             }
         }
-        if (!count($this->_errors)){
+        // Use explicit comparison to avoid negated count() warning
+        if (count($this->_errors) === 0) {
             $output .= $this->displayConfirmation($this->l('Settings updated'));
         } else {
-            foreach ($this->_errors as $error)
-                $errors = $error.' '.$this->l('Settings failed');
+            // Build a single message string from all collected errors
+            $errors_message = '';
+            foreach ($this->_errors as $error) {
+                if (!empty($errors_message)) {
+                    $errors_message .= "\n";
+                }
+                $errors_message .= $error . ' ' . $this->l('Settings failed');
+            }
 
-            $output .= $this->displayError($errors);
+            $output .= $this->displayError($errors_message);
         }
         return $output;
     }

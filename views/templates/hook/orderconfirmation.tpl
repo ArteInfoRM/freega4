@@ -1,15 +1,13 @@
 {*
-**
-*  2009-2023 Tecnoacquisti.com
-*
-*  For support feel free to contact us on our website at https://www.tecnoacquisti.com
-*
-*  @author    Tecnoacquisti.com <admin@arteinformatica.eu>
-*  @copyright 2009-2023 Tecnoacquisti.com
-*  @version   1.0
-*  @license   One Paid Licence By WebSite Using This Module. No Rent. No Sell. No Share.
-*
-*}
+ * Free GA4 PrestaShop Module
+ *
+ * For support feel free to contact us on our website at https://www.tecnoacquisti.com
+ *
+ * @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
+ * @copyright 2009-2026 Tecnoacquisti.com
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @version   1.0.8
+ *}
 <!-- Start GA4 PrestaShop Module by https://www.tecnoacquisti.com -->
 {literal}
 <script type="text/javascript">
