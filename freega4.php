@@ -227,17 +227,15 @@ class Freega4 extends Module
         $form_values = $this->getConfigFormValues();
 
         foreach (array_keys($form_values) as $key) {
-            if ($key == 'FREEGA4_GTAG_ID') {
+            if ($key === 'FREEGA4_GTAG_ID') {
                 Configuration::updateValue($key, pSQL(Tools::getValue($key)));
             } else {
                 Configuration::updateValue($key, (int)Tools::getValue($key));
             }
         }
-        // Use explicit comparison to avoid negated count() warning
-        if (count($this->_errors) === 0) {
-            $output .= $this->displayConfirmation($this->l('Settings updated'));
-        } else {
-            // Build a single message string from all collected errors
+
+        // If we collected any errors, build and return them immediately
+        if (!empty($this->_errors)) {
             $errors_message = '';
             foreach ($this->_errors as $error) {
                 if (!empty($errors_message)) {
@@ -246,11 +244,13 @@ class Freega4 extends Module
                 $errors_message .= $error . ' ' . $this->l('Settings failed');
             }
 
-            $output .= $this->displayError($errors_message);
+            return $this->displayError($errors_message);
         }
+
+        // No errors: display confirmation
+        $output .= $this->displayConfirmation($this->l('Settings updated'));
         return $output;
     }
-
 
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
