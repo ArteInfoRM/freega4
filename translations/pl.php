@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 $_MODULE['<{freega4}prestashop>freega4_253039bfbebf1434a0ec851747368b09'] = 'Bezpłatna integracja GA4';
 $_MODULE['<{freega4}prestashop>freega4_a2929f8a1853a5a45f610358f2caeb94'] = 'Podstawowy moduł do integracji GA4 (Google Analytics 4)';
 $_MODULE['<{freega4}prestashop>freega4_f4f70727dc34561dfde1a3c529b6205c'] = 'Konfiguracja';
@@ -13,10 +13,20 @@ $_MODULE['<{freega4}prestashop>freega4_bfc5f4c32acd1168caa49f34b7db584b'] = 'Wym
 $_MODULE['<{freega4}prestashop>freega4_e149709ef1fb10b1cc141e826b7516a2'] = 'Użyj Vanilla JS';
 $_MODULE['<{freega4}prestashop>freega4_7e900c51f124af439f25ab74f37b9871'] = 'Użyj Vanilla JS zamiast jQuery dla zdarzenia add_to_cart';
 $_MODULE['<{freega4}prestashop>freega4_e0fde1bbe0634cf50c82a95e9d4c9cc8'] = 'Wprowadź identyfikator pomiaru strumienia danych';
+$_MODULE['<{freega4}prestashop>freega4_099a2523de10dced60352aff0c88e0b0'] = 'Wprowadz identyfikator pomiaru GA4, na przyklad G-XXXXXXXXXX.';
 $_MODULE['<{freega4}prestashop>freega4_ae7512a8b8ce45173d71508b86fb1555'] = 'ID GA4';
+$_MODULE['<{freega4}prestashop>freega4_5be00edb599eaa651f7bf6f45a2490da'] = 'Integracja z menedzerem zgody';
+$_MODULE['<{freega4}prestashop>freega4_6fa9139a0daa3452df0f743695449144'] = 'Wybierz, ktory baner zgody ma kontrolowac zgode analytics GA4.';
+$_MODULE['<{freega4}prestashop>freega4_4e4aced860aa539a4a0437ea7f63818d'] = 'LG Cookies Law (Linea Grafica)';
+$_MODULE['<{freega4}prestashop>freega4_2b696c11a553c385e92fe63393377a13'] = 'Art Cookie Choices Pro';
+$_MODULE['<{freega4}prestashop>freega4_b1ee4597b4427becae1a10fc9cfed4a2'] = 'ID celu LG Cookies Law';
+$_MODULE['<{freega4}prestashop>freega4_395838f288b4457f6a6183c97f1b6ae3'] = 'Numeryczny ID celu Analytics w LG Cookies Law. Domyslna wartosc to 3.';
 $_MODULE['<{freega4}prestashop>freega4_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz';
 $_MODULE['<{freega4}prestashop>freega4_c888438d14855d7d96a2724ee9c306bd'] = 'Ustawienia zapisane';
 $_MODULE['<{freega4}prestashop>freega4_b9284bff13acffdd879ef4ac7fca5234'] = 'Błąd zapisu';
+$_MODULE['<{freega4}prestashop>freega4_5fcea933361f76babeefec5307a30cc7'] = 'Format ID GA4 jest nieprawidlowy.';
+$_MODULE['<{freega4}prestashop>freega4_5e7aefebc9c5ee2208d7c6af86c40bb9'] = 'Integracja z menedzerem zgody jest nieprawidlowa.';
+$_MODULE['<{freega4}prestashop>freega4_ceaaa3dcd3e902532ea0ee9f2c63a982'] = 'ID celu LG Cookies Law musi byc liczba dodatnia.';
 $_MODULE['<{freega4}prestashop>freega4_60a449ec73e10cf5e78387d34fe72f59'] = 'Nie wykryto';
 $_MODULE['<{freega4}prestashop>configure_253039bfbebf1434a0ec851747368b09'] = 'Bezpłatna integracja GA4 dla PrestaShop';
 $_MODULE['<{freega4}prestashop>configure_407183425031c3bd32007631d738dd83'] = 'Moduł umożliwia wstawienie tagu śledzącego GA4 w PrestaShop';

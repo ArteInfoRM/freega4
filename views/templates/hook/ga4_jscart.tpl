@@ -6,7 +6,7 @@
  * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.0.9
+ * @version   1.1.0
  *}
 <!-- Start GA4 PrestaShop Module by https://www.tecnoacquisti.com -->
 {literal}

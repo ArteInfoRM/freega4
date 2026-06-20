@@ -9,6 +9,17 @@ License: MIT.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-20
+
+### Fixed
+- Added explicit Smarty modifiers to numeric GA4 ecommerce values to satisfy validator security checks.
+- Applied coding-standard fixes to translation files and upgrade scripts.
+- Applied coding-standard fixes to the main module file.
+
+### Changed
+- Bumped module version to 1.1.0.
+- Updated legacy module translations with the cookie law and validation messages.
+
 ## [1.0.9] - 2026-06-20
 
 ### Added
@@ -71,7 +82,8 @@ License: MIT.
   - Unregistered legacy hooks: `header`, `backOfficeHeader`.
   - Registered modern hooks: `displayHeader`, `displayFooterProduct`, `displayFooter`, `orderConfirmation`.
 
-[1.0.9]: https://github.com/TECN0ACQUISTI/freega4/releases/tag/1.0.9
+[1.1.0]: https://github.com/ArteInfoRM/freega4/releases/tag/v1.1.0
+[1.0.9]: https://github.com/ArteInfoRM/freega4/releases/tag/v1.0.9
 [1.0.8]: https://github.com/TECN0ACQUISTI/freega4/releases/tag/1.0.8
 [1.0.7]: https://github.com/TECN0ACQUISTI/freega4/releases/tag/1.0.7
 [1.0.5]: https://github.com/TECN0ACQUISTI/freega4/releases/tag/1.0.5

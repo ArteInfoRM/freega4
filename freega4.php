@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Free GA4 PrestaShop Module
  *
@@ -7,9 +8,9 @@
  * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.0.9
+ *
+ * @version   1.1.0
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -22,11 +23,11 @@ class Freega4 extends Module
     {
         $this->name = 'freega4';
         $this->tab = 'analytics_stats';
-        $this->version = '1.0.9';
+        $this->version = '1.1.0';
         $this->author = 'Tecnoacquisti.com';
         $this->need_instance = 0;
 
-        /**
+        /*
          * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
          */
         $this->bootstrap = true;
@@ -47,19 +48,19 @@ class Freega4 extends Module
     {
         Configuration::updateValue('FREEGA4_LIVE_MODE', false);
 
-        return parent::install() &&
-            $this->registerHook('displayHeader') &&
-            $this->registerHook('displayBackOfficeHeader') &&
-            $this->registerHook('actionFrontControllerSetMedia') &&
-            $this->registerHook('displayFooterProduct') &&
-            $this->registerHook('displayFooter') &&
-            $this->registerHook('orderConfirmation') &&
-            Configuration::updateValue('FREEGA4_GTAG_ID', '') &&
-            Configuration::updateValue('FREEGA4_ACTIVE', 0) &&
-            Configuration::updateValue('FREEGA4_ECOMMERCE', 0) &&
-            Configuration::updateValue('FREEGA4_VANILLAJS', 1) &&
-            Configuration::updateValue('FREEGA4_CONSENT_MANAGER', 'disabled') &&
-            Configuration::updateValue('FREEGA4_LG_PURPOSE', 3);
+        return parent::install()
+            && $this->registerHook('displayHeader')
+            && $this->registerHook('displayBackOfficeHeader')
+            && $this->registerHook('actionFrontControllerSetMedia')
+            && $this->registerHook('displayFooterProduct')
+            && $this->registerHook('displayFooter')
+            && $this->registerHook('orderConfirmation')
+            && Configuration::updateValue('FREEGA4_GTAG_ID', '')
+            && Configuration::updateValue('FREEGA4_ACTIVE', 0)
+            && Configuration::updateValue('FREEGA4_ECOMMERCE', 0)
+            && Configuration::updateValue('FREEGA4_VANILLAJS', 1)
+            && Configuration::updateValue('FREEGA4_CONSENT_MANAGER', 'disabled')
+            && Configuration::updateValue('FREEGA4_LG_PURPOSE', 3);
     }
 
     public function uninstall()
@@ -81,13 +82,13 @@ class Freega4 extends Module
     public function getContent()
     {
         $output = '';
-        $useSsl = (bool)Configuration::get('PS_SSL_ENABLED_EVERYWHERE') || (bool)Configuration::get('PS_SSL_ENABLED');
-        $shop_base_url = $this->context->link->getBaseLink((int)$this->context->shop->id, $useSsl);
+        $useSsl = (bool) Configuration::get('PS_SSL_ENABLED_EVERYWHERE') || (bool) Configuration::get('PS_SSL_ENABLED');
+        $shop_base_url = $this->context->link->getBaseLink((int) $this->context->shop->id, $useSsl);
 
-        /**
+        /*
          * If values have been submitted in the form, process.
          */
-        if (((bool)Tools::isSubmit('submitFreega4Module')) == true) {
+        if (((bool) Tools::isSubmit('submitFreega4Module')) == true) {
             $output .= $this->postProcess();
         }
 
@@ -263,7 +264,7 @@ class Freega4 extends Module
             ),
             'FREEGA4_LG_PURPOSE' => Tools::getValue(
                 'FREEGA4_LG_PURPOSE',
-                (int)Configuration::get('FREEGA4_LG_PURPOSE') > 0 ? (int)Configuration::get('FREEGA4_LG_PURPOSE') : 3
+                (int) Configuration::get('FREEGA4_LG_PURPOSE') > 0 ? (int) Configuration::get('FREEGA4_LG_PURPOSE') : 3
             ),
         ];
     }
@@ -279,35 +280,38 @@ class Freega4 extends Module
 
         foreach (array_keys($form_values) as $key) {
             if ($key === 'FREEGA4_GTAG_ID') {
-                $measurementId = strtoupper(trim((string)Tools::getValue($key)));
+                $measurementId = strtoupper(trim((string) Tools::getValue($key)));
 
                 if ($measurementId !== '' && !preg_match('/^G-[A-Z0-9]{4,32}$/', $measurementId)) {
                     $this->_errors[] = $this->l('GA4 ID format is invalid.');
+
                     continue;
                 }
 
                 Configuration::updateValue($key, pSQL($measurementId));
             } elseif ($key === 'FREEGA4_CONSENT_MANAGER') {
-                $manager = (string)Tools::getValue($key);
+                $manager = (string) Tools::getValue($key);
                 $allowedManagers = ['disabled', 'lg', 'artcookie'];
 
                 if (!in_array($manager, $allowedManagers, true)) {
                     $this->_errors[] = $this->l('Consent manager integration is invalid.');
+
                     continue;
                 }
 
                 Configuration::updateValue($key, $manager);
             } elseif ($key === 'FREEGA4_LG_PURPOSE') {
-                $purpose = (int)Tools::getValue($key);
+                $purpose = (int) Tools::getValue($key);
 
                 if ($purpose <= 0 || $purpose > 999) {
                     $this->_errors[] = $this->l('LG Cookies Law purpose ID must be a positive number.');
+
                     continue;
                 }
 
                 Configuration::updateValue($key, $purpose);
             } else {
-                Configuration::updateValue($key, (int)Tools::getValue($key));
+                Configuration::updateValue($key, (int) Tools::getValue($key));
             }
         }
 
@@ -326,6 +330,7 @@ class Freega4 extends Module
 
         // No errors: display confirmation
         $output .= $this->displayConfirmation($this->l('Settings updated'));
+
         return $output;
     }
 
@@ -336,7 +341,7 @@ class Freega4 extends Module
      */
     protected function getConsentManagerMode()
     {
-        $manager = (string)Configuration::get('FREEGA4_CONSENT_MANAGER');
+        $manager = (string) Configuration::get('FREEGA4_CONSENT_MANAGER');
 
         if (in_array($manager, ['disabled', 'lg', 'artcookie'], true)) {
             return $manager;
@@ -354,14 +359,14 @@ class Freega4 extends Module
      */
     public function hookActionFrontControllerSetMedia($params)
     {
-        if ((int)Configuration::get('FREEGA4_ACTIVE') !== 1) {
+        if ((int) Configuration::get('FREEGA4_ACTIVE') !== 1) {
             return;
         }
 
         $manager = $this->getConsentManagerMode();
 
         if ($manager === 'lg') {
-            $purpose = (int)Configuration::get('FREEGA4_LG_PURPOSE');
+            $purpose = (int) Configuration::get('FREEGA4_LG_PURPOSE');
             $purpose = $purpose > 0 ? $purpose : 3;
 
             if (class_exists('Media') && method_exists('Media', 'addJsDef')) {
@@ -462,10 +467,10 @@ class Freega4 extends Module
      */
     public function hookDisplayHeader()
     {
-        $active = (int)Configuration::get('FREEGA4_ACTIVE');
-        $gtag_id = (string)Configuration::get('FREEGA4_GTAG_ID');
+        $active = (int) Configuration::get('FREEGA4_ACTIVE');
+        $gtag_id = (string) Configuration::get('FREEGA4_GTAG_ID');
         $manager = $this->getConsentManagerMode();
-        $lgPurpose = (int)Configuration::get('FREEGA4_LG_PURPOSE');
+        $lgPurpose = (int) Configuration::get('FREEGA4_LG_PURPOSE');
 
         $this->smarty->assign([
             'gtag_id' => $gtag_id,
@@ -480,22 +485,22 @@ class Freega4 extends Module
 
     public function hookDisplayFooterProduct()
     {
-        $active = (int)Configuration::get('FREEGA4_ACTIVE');
-        $ecommerce = (int)Configuration::get('FREEGA4_ECOMMERCE');
-        $gtag_id = (string)Configuration::get('FREEGA4_GTAG_ID');
+        $active = (int) Configuration::get('FREEGA4_ACTIVE');
+        $ecommerce = (int) Configuration::get('FREEGA4_ECOMMERCE');
+        $gtag_id = (string) Configuration::get('FREEGA4_GTAG_ID');
 
         if ($active === 1 && $ecommerce === 1 && $gtag_id !== '') {
-            $id_product = (int)Tools::getValue('id_product');
-            $lang_id = (int)Configuration::get('PS_LANG_DEFAULT');
+            $id_product = (int) Tools::getValue('id_product');
+            $lang_id = (int) Configuration::get('PS_LANG_DEFAULT');
             $product = new Product($id_product, false, $lang_id);
-            $attribute_id = (int)Tools::getValue('id_product_attribute');
+            $attribute_id = (int) Tools::getValue('id_product_attribute');
             $product_sku = $id_product . 'v' . $attribute_id;
             $product_category = $product->category;
             if ($product_category == '') {
                 $product_category = $this->l('Not detected');
             }
             $id_manufacturer = $product->id_manufacturer;
-            $manufacturer_name = Manufacturer::getNameById((int)$id_manufacturer);
+            $manufacturer_name = Manufacturer::getNameById((int) $id_manufacturer);
 
             $this->smarty->assign([
                 'product_sku' => $product_sku,
@@ -510,9 +515,9 @@ class Freega4 extends Module
 
     public function hookOrderConfirmation($params)
     {
-        $active = (int)Configuration::get('FREEGA4_ACTIVE');
-        $ecommerce = (int)Configuration::get('FREEGA4_ECOMMERCE');
-        $gtag_id = (string)Configuration::get('FREEGA4_GTAG_ID');
+        $active = (int) Configuration::get('FREEGA4_ACTIVE');
+        $ecommerce = (int) Configuration::get('FREEGA4_ECOMMERCE');
+        $gtag_id = (string) Configuration::get('FREEGA4_GTAG_ID');
 
         if ($active === 1 && $ecommerce === 1 && $gtag_id !== '') {
             $order = $params['order'];
@@ -521,10 +526,10 @@ class Freega4 extends Module
             $total_paid_tax_excl = $order->total_paid_tax_excl;
             $total_tax = $total_paid - $total_paid_tax_excl;
             $total_shipping = $order->total_shipping;
-            $total_discounts = (float)$order->total_discounts;
+            $total_discounts = (float) $order->total_discounts;
             $discounts = '';
             if ($total_discounts > 0) {
-                $sql = 'SELECT `name` FROM `' . _DB_PREFIX_ . 'order_cart_rule` WHERE `id_order` = ' . (int)$order->id . ';';
+                $sql = 'SELECT `name` FROM `' . _DB_PREFIX_ . 'order_cart_rule` WHERE `id_order` = ' . (int) $order->id . ';';
                 if ($results = Db::getInstance()->ExecuteS($sql)) {
                     foreach ($results as $row) {
                         $name = $row['name'];
@@ -539,12 +544,12 @@ class Freega4 extends Module
                 $product_id = $detail['product_id'];
                 $product_attribute_id = $detail['product_attribute_id'];
                 $product_sku = $product_id . 'v' . $product_attribute_id;
-                $lang_id = (int)Configuration::get('PS_LANG_DEFAULT');
+                $lang_id = (int) Configuration::get('PS_LANG_DEFAULT');
                 $product = new Product($product_id, false, $lang_id);
                 $product_name = $product->name;
                 $product_category = $product->category;
                 $id_manufacturer = $product->id_manufacturer;
-                $manufacturer_name = Manufacturer::getNameById((int)$id_manufacturer);
+                $manufacturer_name = Manufacturer::getNameById((int) $id_manufacturer);
                 if ($product_category == '') {
                     $product_category = $this->l('Not detected');
                 }
@@ -555,17 +560,17 @@ class Freega4 extends Module
                     'product_name' => $product_name,
                     'product_category' => $product_category,
                     'product_manufacturer' => $manufacturer_name,
-                    'product_price' => (float)$product_price,
-                    'product_quantity' => $product_quantity
+                    'product_price' => (float) $product_price,
+                    'product_quantity' => $product_quantity,
                 ];
             }
             $this->smarty->assign([
                 'ecommerce' => $ecommerce,
                 'order_id' => $order_id,
-                'total_paid' => (float)$total_paid,
-                'total_paid_tax_excl' => (float)$total_paid_tax_excl,
-                'total_tax' => (float)$total_tax,
-                'total_shipping' => (float)$total_shipping,
+                'total_paid' => (float) $total_paid,
+                'total_paid_tax_excl' => (float) $total_paid_tax_excl,
+                'total_tax' => (float) $total_tax,
+                'total_shipping' => (float) $total_shipping,
                 'discounts' => $discounts,
                 'ord_details' => $order_list_details,
             ]);
@@ -576,10 +581,10 @@ class Freega4 extends Module
 
     public function hookDisplayFooter()
     {
-        $active = (int)Configuration::get('FREEGA4_ACTIVE');
-        $gtag_id = (string)Configuration::get('FREEGA4_GTAG_ID');
-        $ecommerce = (int)Configuration::get('FREEGA4_ECOMMERCE');
-        $vanilla_js = (int)Configuration::get('FREEGA4_VANILLAJS');
+        $active = (int) Configuration::get('FREEGA4_ACTIVE');
+        $gtag_id = (string) Configuration::get('FREEGA4_GTAG_ID');
+        $ecommerce = (int) Configuration::get('FREEGA4_ECOMMERCE');
+        $vanilla_js = (int) Configuration::get('FREEGA4_VANILLAJS');
 
         if ($active === 1 && $ecommerce === 1 && $vanilla_js === 1 && $gtag_id !== '') {
             return $this->display(__FILE__, 'ga4_jscart_vanilla.tpl');
