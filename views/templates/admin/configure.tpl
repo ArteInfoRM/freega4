@@ -3,10 +3,10 @@
  *
  * For support feel free to contact us on our website at https://www.tecnoacquisti.com
  *
- * @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
+ * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.0.8
+ * @version   1.0.9
  *}
 
 <div class="panel">
@@ -21,3 +21,5 @@
 		<a href="https://www.tecnoacquisti.com" target="_blank">{l s='Discover our modules for prestashop!' mod='freega4'}</a>
 	</p>
 </div>
+
+<script src="{$module_dir|escape:'html':'UTF-8'}views/js/back.js"></script>

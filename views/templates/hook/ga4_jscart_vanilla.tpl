@@ -3,10 +3,10 @@
  *
  * For support feel free to contact us on our website at https://www.tecnoacquisti.com
  *
- * @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
+ * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.0.8
+ * @version   1.0.9
  *}
 <!-- Start GA4 PrestaShop Module by https://www.tecnoacquisti.com -->
 {literal}
@@ -17,9 +17,12 @@
                 function (event) {
                     if (event && event.reason && typeof event.resp !== 'undefined' && !event.resp.hasError) {
                         if (event.reason.linkAction =="add-to-cart" && event.reason.cart) {
+                            if (typeof gtag !== 'function') {
+                                return;
+                            }
                             for (var {id_product: i, id_product_attribute: a, name: n, quantity: q, category: c, price: p} of event.reason.cart.products) {
                                 gtag("event", "add_to_cart", {
-                                    currency: "{$currency.iso_code}",
+                                    currency: "{/literal}{$currency.iso_code|escape:'javascript':'UTF-8'}{literal}",
                                     value: parseFloat(p),
                                     items: [
                                         {

@@ -3,10 +3,10 @@
  *
  * For support feel free to contact us on our website at https://www.tecnoacquisti.com
  *
- * @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
+ * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.0.8
+ * @version   1.0.9
  *}
 
 <div class="panel">
@@ -30,4 +30,3 @@
     </p>
 
 </div>
-

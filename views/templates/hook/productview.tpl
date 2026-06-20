@@ -3,10 +3,10 @@
  *
  * For support feel free to contact us on our website at https://www.tecnoacquisti.com
  *
- * @author    Tecnoacquisti.com <shop@tecnoacquisti.com>
+ * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.0.8
+ * @version   1.0.9
  *}
 <!-- Start GA4 PrestaShop Module - view_item - by https://www.tecnoacquisti.com -->
 {if $product.id > 0}
@@ -17,21 +17,23 @@
     {/if}
 {literal}
 <script type="text/javascript">
+if (typeof gtag === 'function') {
     gtag("event", "view_item", {
-        currency: "{/literal}{$currency.iso_code}{literal}",
+        currency: "{/literal}{$currency.iso_code|escape:'javascript':'UTF-8'}{literal}",
         value: {/literal}{$product_price}{literal},
         items: [
             {
-                item_id: "{/literal}{$product_sku}{literal}",
-                item_name: "{/literal}{$product_name}{literal}",
+                item_id: "{/literal}{$product_sku|escape:'javascript':'UTF-8'}{literal}",
+                item_name: "{/literal}{$product_name|escape:'javascript':'UTF-8'}{literal}",
                 discount: {/literal}{$product.reduction}{literal},
-                item_brand: "{/literal}{$manufacturer_name}{literal}",
-                item_category: "{/literal}{$product_category}{literal}",
+                item_brand: "{/literal}{$manufacturer_name|escape:'javascript':'UTF-8'}{literal}",
+                item_category: "{/literal}{$product_category|escape:'javascript':'UTF-8'}{literal}",
                 price: {/literal}{$product.regular_price_amount}{literal},
                 quantity: {/literal}{$product.quantity_wanted}{literal}
             }
         ]
     });
+}
     </script>
 {/literal}
 {/if}

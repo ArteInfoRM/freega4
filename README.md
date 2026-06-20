@@ -14,6 +14,10 @@ It injects the GA4 `gtag.js` snippet and (optionally) sends basic **e-commerce e
   - Set your **GA4 Measurement ID** (e.g. `G-XXXXXXXXXX`).
   - Enable **E-commerce tracking (beta)**.
   - Choose **Vanilla JS** implementation for the `add_to_cart` event (beta).
+  - Select a consent manager integration for Google Consent Mode:
+    - Disabled
+    - LG Cookies Law
+    - Art Cookie Choices Pro
 - GA4 events implemented (when e-commerce tracking is enabled):
   - `view_item` on product page
   - `add_to_cart` when cart is updated via PrestaShop events
@@ -52,6 +56,15 @@ Go to **Modules > Module Manager > Free GA4 Integration > Configure**.
 - **Use vanilla JS**
   - Uses a Vanilla JS listener instead of jQuery for the `add_to_cart` event.
 
+- **Consent manager integration**
+  - When disabled, the module loads GA4 normally.
+  - With LG Cookies Law or Art Cookie Choices Pro, the module starts Google Consent Mode with analytics storage denied and updates it only when analytics consent is detected.
+
+- **LG Cookies Law purpose ID**
+  - Numeric purpose ID used by LG Cookies Law for analytics consent.
+  - Default value: `3`.
+  - This field is used only when **LG Cookies Law** is selected and is hidden for other consent manager modes.
+
 ## What the module outputs
 
 ### Hooks used
@@ -59,6 +72,9 @@ Go to **Modules > Module Manager > Free GA4 Integration > Configure**.
 The module registers and uses these hooks:
 
 - `displayHeader` → outputs the GA4 global tag (`views/templates/hook/gtag.tpl`).
+- `actionFrontControllerSetMedia` → loads the consent bridge script when a consent manager integration is enabled.
+- `displayBackOfficeHeader` → loads the configuration helper script in the module configuration page.
+- The configuration helper script is also loaded from the module configuration template for better compatibility with PrestaShop 9 back-office rendering.
 - `displayFooterProduct` → outputs `view_item` event (`views/templates/hook/productview.tpl`).
 - `displayFooter` → outputs `add_to_cart` tracking (`views/templates/hook/ga4_jscart.tpl` or `ga4_jscart_vanilla.tpl`).
 - `orderConfirmation` → outputs `purchase` event (`views/templates/hook/orderconfirmation.tpl`).
@@ -68,6 +84,7 @@ The module registers and uses these hooks:
 - **Global Tag** (`gtag.tpl`)
   - Loads `https://www.googletagmanager.com/gtag/js?id=G-...`
   - Calls `gtag('config', 'G-...')`
+  - Initializes Google Consent Mode with denied analytics storage when a consent manager integration is enabled.
 
 - **Product page** (`productview.tpl`)
   - Sends the `view_item` event.
@@ -97,4 +114,3 @@ MIT.
 
 - Author: Tecnoacquisti.com
 - Website: https://www.tecnoacquisti.com
-
