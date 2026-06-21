@@ -9,6 +9,15 @@ License: MIT.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-21
+
+### Changed
+- Removed the jQuery add-to-cart tracking option and now always use the Vanilla JavaScript listener.
+- Removed the "(beta)" suffix from the Ecommerce tracking option.
+- Removed the consent manager integration selector and legacy cookie banner bridge scripts.
+- Documented that Google Consent Mode v2 must be configured in the cookie banner or CMP, such as LG Cookies Law, Art Cookie Choices Pro, iubenda or Cookiebot.
+- Updated documentation and legacy translations for the simplified tracking configuration.
+
 ## [1.1.0] - 2026-06-20
 
 ### Fixed
@@ -82,6 +91,7 @@ License: MIT.
   - Unregistered legacy hooks: `header`, `backOfficeHeader`.
   - Registered modern hooks: `displayHeader`, `displayFooterProduct`, `displayFooter`, `orderConfirmation`.
 
+[1.1.1]: https://github.com/ArteInfoRM/freega4/releases/tag/v1.1.1
 [1.1.0]: https://github.com/ArteInfoRM/freega4/releases/tag/v1.1.0
 [1.0.9]: https://github.com/ArteInfoRM/freega4/releases/tag/v1.0.9
 [1.0.8]: https://github.com/TECN0ACQUISTI/freega4/releases/tag/1.0.8

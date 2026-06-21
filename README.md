@@ -12,12 +12,7 @@ It injects the GA4 `gtag.js` snippet and (optionally) sends basic **e-commerce e
 - Back Office configuration:
   - Enable/disable the module output.
   - Set your **GA4 Measurement ID** (e.g. `G-XXXXXXXXXX`).
-  - Enable **E-commerce tracking (beta)**.
-  - Choose **Vanilla JS** implementation for the `add_to_cart` event (beta).
-  - Select a consent manager integration for Google Consent Mode:
-    - Disabled
-    - LG Cookies Law
-    - Art Cookie Choices Pro
+  - Enable **E-commerce tracking**.
 - GA4 events implemented (when e-commerce tracking is enabled):
   - `view_item` on product page
   - `add_to_cart` when cart is updated via PrestaShop events
@@ -50,20 +45,24 @@ Go to **Modules > Module Manager > Free GA4 Integration > Configure**.
 - **GA4 ID**
   - Your GA4 Measurement ID (example: `G-XXXXXXXXXX`).
 
-- **Ecommerce tracking (beta)**
+- **Ecommerce tracking**
   - Enables additional GA4 e-commerce events.
 
-- **Use vanilla JS**
-  - Uses a Vanilla JS listener instead of jQuery for the `add_to_cart` event.
+### Google Consent Mode
 
-- **Consent manager integration**
-  - When disabled, the module loads GA4 normally.
-  - With LG Cookies Law or Art Cookie Choices Pro, the module starts Google Consent Mode with analytics storage denied and updates it only when analytics consent is detected.
+`freega4` does not include a consent manager integration selector.
 
-- **LG Cookies Law purpose ID**
-  - Numeric purpose ID used by LG Cookies Law for analytics consent.
-  - Default value: `3`.
-  - This field is used only when **LG Cookies Law** is selected and is hidden for other consent manager modes.
+Google Consent Mode v2 is now widely supported by modern cookie banners and CMPs, and is required for many Google Ads use cases in regions where Google requires consent signals. For this reason, consent should be configured in the cookie solution itself, not duplicated in this module.
+
+Before enabling GA4 tracking, configure Google Consent Mode in your cookie banner or CMP. Examples of supported solutions that can manage Consent Mode directly include:
+
+- **LG Cookies Law** / Linea Grafica
+- **Art Cookie Choices Pro**
+- **iubenda**
+- **Cookiebot**
+- Any equivalent CMP with Google Consent Mode v2 support
+
+Only one system should update Google consent signals such as `analytics_storage`, `ad_storage`, `ad_user_data` and `ad_personalization`. If your cookie banner already manages Consent Mode, do not add a second bridge in the theme or in another module.
 
 ## What the module outputs
 
@@ -72,11 +71,8 @@ Go to **Modules > Module Manager > Free GA4 Integration > Configure**.
 The module registers and uses these hooks:
 
 - `displayHeader` → outputs the GA4 global tag (`views/templates/hook/gtag.tpl`).
-- `actionFrontControllerSetMedia` → loads the consent bridge script when a consent manager integration is enabled.
-- `displayBackOfficeHeader` → loads the configuration helper script in the module configuration page.
-- The configuration helper script is also loaded from the module configuration template for better compatibility with PrestaShop 9 back-office rendering.
 - `displayFooterProduct` → outputs `view_item` event (`views/templates/hook/productview.tpl`).
-- `displayFooter` → outputs `add_to_cart` tracking (`views/templates/hook/ga4_jscart.tpl` or `ga4_jscart_vanilla.tpl`).
+- `displayFooter` → outputs `add_to_cart` tracking (`views/templates/hook/ga4_jscart_vanilla.tpl`).
 - `orderConfirmation` → outputs `purchase` event (`views/templates/hook/orderconfirmation.tpl`).
 
 ### Events details
@@ -84,12 +80,12 @@ The module registers and uses these hooks:
 - **Global Tag** (`gtag.tpl`)
   - Loads `https://www.googletagmanager.com/gtag/js?id=G-...`
   - Calls `gtag('config', 'G-...')`
-  - Initializes Google Consent Mode with denied analytics storage when a consent manager integration is enabled.
+  - Does not update Consent Mode. Consent signals must be managed by the configured cookie banner or CMP.
 
 - **Product page** (`productview.tpl`)
   - Sends the `view_item` event.
 
-- **Add to cart** (`ga4_jscart.tpl` / `ga4_jscart_vanilla.tpl`)
+- **Add to cart** (`ga4_jscart_vanilla.tpl`)
   - Listens to PrestaShop’s JS event `prestashop.on('updateCart', ...)`.
   - Sends `add_to_cart` when `event.reason.linkAction == 'add-to-cart'`.
 
@@ -99,12 +95,12 @@ The module registers and uses these hooks:
 ## Notes / Troubleshooting
 
 - Make sure the GA4 ID is correct and the module is **Active**.
+- Make sure Google Consent Mode is configured in your cookie banner or CMP before relying on GA4 or Google Ads measurement.
 - If you don’t see events in GA4:
   - Use GA4 **DebugView**.
   - Check the browser console for JS errors.
   - Verify that `gtag` is defined on the page (the global tag must load).
-- If your theme doesn’t load jQuery and you want `add_to_cart` tracking:
-  - Enable **Use vanilla JS**.
+- The `add_to_cart` listener uses Vanilla JavaScript and does not require jQuery.
 
 ## License
 

@@ -8,7 +8,7 @@
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
  *
- * @version   1.1.0
+ * @version   1.1.1
  */
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -22,7 +22,7 @@ class Freega4 extends Module
     {
         $this->name = 'freega4';
         $this->tab = 'analytics_stats';
-        $this->version = '1.1.0';
+        $this->version = '1.1.1';
         $this->author = 'Tecnoacquisti.com';
         $this->need_instance = 0;
 
@@ -49,17 +49,12 @@ class Freega4 extends Module
 
         return parent::install()
             && $this->registerHook('displayHeader')
-            && $this->registerHook('displayBackOfficeHeader')
-            && $this->registerHook('actionFrontControllerSetMedia')
             && $this->registerHook('displayFooterProduct')
             && $this->registerHook('displayFooter')
             && $this->registerHook('orderConfirmation')
             && Configuration::updateValue('FREEGA4_GTAG_ID', '')
             && Configuration::updateValue('FREEGA4_ACTIVE', 0)
-            && Configuration::updateValue('FREEGA4_ECOMMERCE', 0)
-            && Configuration::updateValue('FREEGA4_VANILLAJS', 1)
-            && Configuration::updateValue('FREEGA4_CONSENT_MANAGER', 'disabled')
-            && Configuration::updateValue('FREEGA4_LG_PURPOSE', 3);
+            && Configuration::updateValue('FREEGA4_ECOMMERCE', 0);
     }
 
     public function uninstall()
@@ -98,6 +93,7 @@ class Freega4 extends Module
 
         $output .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
         $output .= $this->renderForm();
+        $output .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/consent_mode_notice.tpl');
         $output .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/copyright.tpl');
 
         return $output;
@@ -163,28 +159,9 @@ class Freega4 extends Module
                     ],
                     [
                         'type' => 'switch',
-                        'label' => $this->l('Ecommerce tracking (beta)'),
+                        'label' => $this->l('Ecommerce tracking'),
                         'name' => 'FREEGA4_ECOMMERCE',
                         'desc' => $this->l('Requires PrestaShop > 1.7.6.X'),
-                        'is_bool' => true,
-                        'values' => [
-                            [
-                                'id' => 'active_on',
-                                'value' => true,
-                                'label' => $this->l('Enabled'),
-                            ],
-                            [
-                                'id' => 'active_off',
-                                'value' => false,
-                                'label' => $this->l('Disabled'),
-                            ],
-                        ],
-                    ],
-                    [
-                        'type' => 'switch',
-                        'label' => $this->l('Use vanilla JS'),
-                        'name' => 'FREEGA4_VANILLAJS',
-                        'desc' => $this->l('Use Vanilla JS instead of jQuery for the add_to_cart event (beta).'),
                         'is_bool' => true,
                         'values' => [
                             [
@@ -206,39 +183,6 @@ class Freega4 extends Module
                         'name' => 'FREEGA4_GTAG_ID',
                         'label' => $this->l('GA4 ID'),
                     ],
-                    [
-                        'type' => 'select',
-                        'label' => $this->l('Consent manager integration'),
-                        'name' => 'FREEGA4_CONSENT_MANAGER',
-                        'desc' => $this->l('Choose which consent banner should control GA4 analytics consent.'),
-                        'options' => [
-                            'query' => [
-                                [
-                                    'id' => 'disabled',
-                                    'name' => $this->l('Disabled'),
-                                ],
-                                [
-                                    'id' => 'lg',
-                                    'name' => $this->l('LG Cookies Law (Linea Grafica)'),
-                                ],
-                                [
-                                    'id' => 'artcookie',
-                                    'name' => $this->l('Art Cookie Choices Pro'),
-                                ],
-                            ],
-                            'id' => 'id',
-                            'name' => 'name',
-                        ],
-                    ],
-                    [
-                        'col' => 1,
-                        'type' => 'text',
-                        'label' => $this->l('LG Cookies Law purpose ID'),
-                        'name' => 'FREEGA4_LG_PURPOSE',
-                        'class' => 'fixed-width-xs',
-                        'form_group_class' => 'freega4-lg-purpose-row',
-                        'desc' => $this->l('Numeric ID of the LG Cookies Law Analytics purpose. Default is 3.'),
-                    ],
                 ],
                 'submit' => [
                     'title' => $this->l('Save'),
@@ -256,15 +200,6 @@ class Freega4 extends Module
             'FREEGA4_ACTIVE' => Tools::getValue('FREEGA4_ACTIVE', Configuration::get('FREEGA4_ACTIVE')),
             'FREEGA4_GTAG_ID' => Tools::getValue('FREEGA4_GTAG_ID', Configuration::get('FREEGA4_GTAG_ID')),
             'FREEGA4_ECOMMERCE' => Tools::getValue('FREEGA4_ECOMMERCE', Configuration::get('FREEGA4_ECOMMERCE')),
-            'FREEGA4_VANILLAJS' => Tools::getValue('FREEGA4_VANILLAJS', Configuration::get('FREEGA4_VANILLAJS')),
-            'FREEGA4_CONSENT_MANAGER' => Tools::getValue(
-                'FREEGA4_CONSENT_MANAGER',
-                $this->getConsentManagerMode()
-            ),
-            'FREEGA4_LG_PURPOSE' => Tools::getValue(
-                'FREEGA4_LG_PURPOSE',
-                (int) Configuration::get('FREEGA4_LG_PURPOSE') > 0 ? (int) Configuration::get('FREEGA4_LG_PURPOSE') : 3
-            ),
         ];
     }
 
@@ -288,27 +223,6 @@ class Freega4 extends Module
                 }
 
                 Configuration::updateValue($key, pSQL($measurementId));
-            } elseif ($key === 'FREEGA4_CONSENT_MANAGER') {
-                $manager = (string) Tools::getValue($key);
-                $allowedManagers = ['disabled', 'lg', 'artcookie'];
-
-                if (!in_array($manager, $allowedManagers, true)) {
-                    $this->_errors[] = $this->l('Consent manager integration is invalid.');
-
-                    continue;
-                }
-
-                Configuration::updateValue($key, $manager);
-            } elseif ($key === 'FREEGA4_LG_PURPOSE') {
-                $purpose = (int) Tools::getValue($key);
-
-                if ($purpose <= 0 || $purpose > 999) {
-                    $this->_errors[] = $this->l('LG Cookies Law purpose ID must be a positive number.');
-
-                    continue;
-                }
-
-                Configuration::updateValue($key, $purpose);
             } else {
                 Configuration::updateValue($key, (int) Tools::getValue($key));
             }
@@ -334,147 +248,15 @@ class Freega4 extends Module
     }
 
     /**
-     * Return the configured consent manager mode.
-     *
-     * @return string
-     */
-    protected function getConsentManagerMode()
-    {
-        $manager = (string) Configuration::get('FREEGA4_CONSENT_MANAGER');
-
-        if (in_array($manager, ['disabled', 'lg', 'artcookie'], true)) {
-            return $manager;
-        }
-
-        return 'disabled';
-    }
-
-    /**
-     * Register front-office consent bridge scripts.
-     *
-     * @param array $params Hook parameters
-     *
-     * @return void
-     */
-    public function hookActionFrontControllerSetMedia($params)
-    {
-        if ((int) Configuration::get('FREEGA4_ACTIVE') !== 1) {
-            return;
-        }
-
-        $manager = $this->getConsentManagerMode();
-
-        if ($manager === 'lg') {
-            $purpose = (int) Configuration::get('FREEGA4_LG_PURPOSE');
-            $purpose = $purpose > 0 ? $purpose : 3;
-
-            if (class_exists('Media') && method_exists('Media', 'addJsDef')) {
-                Media::addJsDef(['freega4LgPurpose' => $purpose]);
-            }
-
-            $this->registerFrontJavascript(
-                'module-' . $this->name . '-lg-bridge',
-                'views/js/freega4-lg-bridge.js'
-            );
-        } elseif ($manager === 'artcookie') {
-            $this->registerFrontJavascript(
-                'module-' . $this->name . '-artcookie-bridge',
-                'views/js/freega4-artcookie-bridge.js'
-            );
-        }
-    }
-
-    /**
-     * Register back-office assets.
-     *
-     * @param array $params Hook parameters
-     *
-     * @return void
-     */
-    public function hookDisplayBackOfficeHeader($params)
-    {
-        if (Tools::getValue('configure') !== $this->name) {
-            return;
-        }
-
-        $this->registerBackJavascript('module-' . $this->name . '-back', 'views/js/back.js');
-    }
-
-    /**
-     * Register a front-office JavaScript file with legacy fallback.
-     *
-     * @param string $id Asset identifier
-     * @param string $relativePath Module-relative asset path
-     *
-     * @return void
-     */
-    protected function registerFrontJavascript($id, $relativePath)
-    {
-        $controller = $this->context->controller;
-
-        if (method_exists($controller, 'registerJavascript')) {
-            $controller->registerJavascript(
-                $id,
-                $this->_path . $relativePath,
-                [
-                    'position' => 'head',
-                    'priority' => 50,
-                    'attributes' => 'defer',
-                ]
-            );
-
-            return;
-        }
-
-        if (method_exists($controller, 'addJS')) {
-            $controller->addJS($this->_path . $relativePath);
-        }
-    }
-
-    /**
-     * Register a back-office JavaScript file with legacy fallback.
-     *
-     * @param string $id Asset identifier
-     * @param string $relativePath Module-relative asset path
-     *
-     * @return void
-     */
-    protected function registerBackJavascript($id, $relativePath)
-    {
-        $controller = $this->context->controller;
-
-        if (method_exists($controller, 'addJS')) {
-            $controller->addJS($this->_path . $relativePath);
-
-            return;
-        }
-
-        if (method_exists($controller, 'registerJavascript')) {
-            $controller->registerJavascript(
-                $id,
-                $this->_path . $relativePath,
-                [
-                    'position' => 'bottom',
-                    'priority' => 50,
-                ]
-            );
-        }
-    }
-
-    /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
     public function hookDisplayHeader()
     {
         $active = (int) Configuration::get('FREEGA4_ACTIVE');
         $gtag_id = (string) Configuration::get('FREEGA4_GTAG_ID');
-        $manager = $this->getConsentManagerMode();
-        $lgPurpose = (int) Configuration::get('FREEGA4_LG_PURPOSE');
 
         $this->smarty->assign([
             'gtag_id' => $gtag_id,
-            'freega4_consent_manager' => $manager,
-            'freega4_lg_purpose' => $lgPurpose > 0 ? $lgPurpose : 3,
         ]);
 
         if ($active === 1 && $gtag_id !== '') {
@@ -583,12 +365,9 @@ class Freega4 extends Module
         $active = (int) Configuration::get('FREEGA4_ACTIVE');
         $gtag_id = (string) Configuration::get('FREEGA4_GTAG_ID');
         $ecommerce = (int) Configuration::get('FREEGA4_ECOMMERCE');
-        $vanilla_js = (int) Configuration::get('FREEGA4_VANILLAJS');
 
-        if ($active === 1 && $ecommerce === 1 && $vanilla_js === 1 && $gtag_id !== '') {
+        if ($active === 1 && $ecommerce === 1 && $gtag_id !== '') {
             return $this->display(__FILE__, 'ga4_jscart_vanilla.tpl');
-        } elseif ($active === 1 && $ecommerce === 1 && $gtag_id !== '') {
-            return $this->display(__FILE__, 'ga4_jscart.tpl');
         }
     }
 }

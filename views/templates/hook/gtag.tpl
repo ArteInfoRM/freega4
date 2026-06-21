@@ -6,7 +6,7 @@
  * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.1.0
+ * @version   1.1.1
  *}
 <!-- Start Free GA4 PrestaShop Module by https://www.tecnoacquisti.com -->
 {literal}
@@ -14,22 +14,6 @@
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
-        {/literal}
-        {if $freega4_consent_manager != 'disabled'}
-        {literal}
-        gtag('consent', 'default', {
-            ad_personalization: 'denied',
-            ad_storage: 'denied',
-            ad_user_data: 'denied',
-            analytics_storage: 'denied',
-            wait_for_update: 500
-        });
-        {/literal}
-        {/if}
-        {if $freega4_consent_manager == 'lg'}
-        window.freega4LgPurpose = {$freega4_lg_purpose|intval};
-        {/if}
-        {literal}
         gtag('js', new Date());
 
         gtag('config', '{/literal}{$gtag_id|escape:'htmlall':'UTF-8'}{literal}');

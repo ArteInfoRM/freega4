@@ -15,35 +15,26 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Upgrade module to version 1.0.9.
+ * Upgrade module to version 1.1.1.
  *
  * @param Freega4 $module Module instance
  *
  * @return bool
  */
-function upgrade_module_1_0_9($module)
+function upgrade_module_1_1_1($module)
 {
+    Configuration::deleteByName('FREEGA4_VANILLAJS');
+    Configuration::deleteByName('FREEGA4_CONSENT_MANAGER');
+    Configuration::deleteByName('FREEGA4_LG_PURPOSE');
+
     $hooks = [
         'displayBackOfficeHeader',
         'actionFrontControllerSetMedia',
     ];
 
     foreach ($hooks as $hook) {
-        if (!$module->registerHook($hook)) {
-            return false;
-        }
+        $module->unregisterHook($hook);
     }
-
-    $manager = (string) Configuration::get('FREEGA4_CONSENT_MANAGER');
-
-    if (!in_array($manager, ['disabled', 'lg', 'artcookie'], true)) {
-        $manager = 'disabled';
-    }
-
-    $purpose = (int) Configuration::get('FREEGA4_LG_PURPOSE');
-
-    Configuration::updateValue('FREEGA4_CONSENT_MANAGER', $manager);
-    Configuration::updateValue('FREEGA4_LG_PURPOSE', $purpose > 0 ? $purpose : 3);
 
     return true;
 }

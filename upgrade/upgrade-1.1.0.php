@@ -8,7 +8,7 @@
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
  *
- * @version   1.1.0
+ * @version   1.1.1
  */
 if (!defined('_PS_VERSION_')) {
     exit;

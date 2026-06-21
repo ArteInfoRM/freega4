@@ -6,7 +6,7 @@
  * @author    Tecnoacquisti.com <helpdesk@tecnoacquisti.com>
  * @copyright 2009-2026 Tecnoacquisti.com
  * @license   https://opensource.org/licenses/MIT MIT License
- * @version   1.1.0
+ * @version   1.1.1
  *}
 
 <div class="panel">
