@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Free GA4 PrestaShop Module
  *
